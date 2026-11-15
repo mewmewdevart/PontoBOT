@@ -1,0 +1,18 @@
+{
+  "name": "pontobot-back",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "node --watch dev.js",
+    "start": "node dev.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.48.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}
