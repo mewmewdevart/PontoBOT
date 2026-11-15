@@ -1,0 +1,8 @@
+{
+  "name": "pontobot-back",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  }
+}
