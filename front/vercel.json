@@ -17,7 +17,7 @@
   "rewrites": [
     {
       "source": "/api/chat",
-      "destination": "https://pontobot-back.vercel.app/api/chat"
+      "destination": "https://mutirao-pontobot-backend.vercel.app/api/chat"
     }
   ]
 }
