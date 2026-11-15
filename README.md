@@ -32,7 +32,7 @@ Com Node.js 22, execute `npm --prefix back install` na raiz do projeto. Copie `b
 ## Incorporar na Ajuda do Mutirão
 
 ```html
-<script type="module" src="https://pontobot-front.vercel.app/pontobot.js"></script>
+<script type="module" src="mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
 <ponto-bot data-app="https://mutirao-citizen-tech.vercel.app/"></ponto-bot>
 ```
 

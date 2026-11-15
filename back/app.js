@@ -16,7 +16,7 @@ const ai = key ? new GoogleGenAI({ apiKey: key }) : null;
 const defaultOrigins = [
   'http://127.0.0.1:4178',
   'http://localhost:4178',
-  'https://pontobot-front.vercel.app',
+  'mutirao-pontobot-frontend.vercel.app',
   'https://mutirao-citizen-tech.vercel.app',
 ];
 const origins = new Set(process.env.CORS_ORIGINS?.split(',').map((origin) => origin.trim()).filter(Boolean) ?? defaultOrigins);
