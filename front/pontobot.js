@@ -40,10 +40,15 @@ function getLocalFallback(question) {
 const template = document.createElement('template');
 template.innerHTML = `
   <link rel="stylesheet" href="${stylesheet}">
-  <section class="panel" aria-labelledby="bot-title">
+  <section id="bot-panel" class="panel" aria-labelledby="bot-title">
     <header>
       <img class="mark" src="${avatar}" alt="" width="44" height="44" aria-hidden="true">
-      <div><h2 id="bot-title">PontoBOT</h2><p>Assistente do Mutirão</p></div>
+      <div class="heading"><h2 id="bot-title">PontoBOT</h2><p>Assistente do Mutirão</p></div>
+      <button class="close" type="button" aria-label="Fechar assistente PontoBOT">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
     </header>
     <div class="body">
       <div class="transcript" role="log" aria-label="Conversa" tabindex="0">
@@ -59,13 +64,22 @@ template.innerHTML = `
         <p class="status" role="status"></p>
       </form>
     </div>
-  </section>`;
+  </section>
+  <button class="launcher" type="button" aria-expanded="false" aria-controls="bot-panel" aria-label="Abrir assistente PontoBOT">
+    <img class="launcher-avatar" src="${avatar}" alt="" width="56" height="56" aria-hidden="true">
+    <svg class="launcher-close" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+      <path d="M18 6 6 18M6 6l12 12"/>
+    </svg>
+  </button>`;
 
 class PontoBot extends HTMLElement {
   constructor() {
     super();
     const root = this.attachShadow({ mode: 'open' });
     root.append(template.content.cloneNode(true));
+    this.panel = root.querySelector('.panel');
+    this.launcher = root.querySelector('.launcher');
+    this.closeButton = root.querySelector('.close');
     this.transcript = root.querySelector('.transcript');
     this.input = root.querySelector('input');
     this.status = root.querySelector('.status');
@@ -84,7 +98,56 @@ class PontoBot extends HTMLElement {
       event.preventDefault();
       this.ask(this.input.value);
     });
-    this.buttons = root.querySelectorAll('button');
+    this.buttons = root.querySelectorAll('.options button, .send');
+
+    this.launcher.addEventListener('click', () => this.toggle());
+    this.closeButton.addEventListener('click', () => this.close({ focusLauncher: true }));
+    root.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !this.hasAttribute('inline') && this.isOpen) {
+        this.close({ focusLauncher: true });
+      }
+    });
+  }
+
+  connectedCallback() {
+    this.syncLayout();
+  }
+
+  static get observedAttributes() {
+    return ['inline', 'open'];
+  }
+
+  attributeChangedCallback(name) {
+    if (name === 'inline' || name === 'open') this.syncLayout();
+  }
+
+  get isOpen() {
+    return this.hasAttribute('inline') || this.hasAttribute('open');
+  }
+
+  syncLayout() {
+    const inline = this.hasAttribute('inline');
+    const open = this.isOpen;
+    this.panel.hidden = !inline && !open;
+    this.launcher.setAttribute('aria-expanded', String(open));
+    this.launcher.setAttribute('aria-label', open ? 'Fechar assistente PontoBOT' : 'Abrir assistente PontoBOT');
+  }
+
+  open() {
+    if (this.hasAttribute('inline')) return;
+    this.setAttribute('open', '');
+    requestAnimationFrame(() => this.input.focus());
+  }
+
+  close({ focusLauncher = false } = {}) {
+    if (this.hasAttribute('inline')) return;
+    this.removeAttribute('open');
+    if (focusLauncher) this.launcher.focus();
+  }
+
+  toggle() {
+    if (this.isOpen) this.close();
+    else this.open();
   }
 
   appendMessage(message, className, action) {
