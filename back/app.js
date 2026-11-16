@@ -11,12 +11,12 @@ const app = express();
 app.disable('x-powered-by');
 
 const key = process.env.GEMINI_API_KEY?.trim();
-const model = process.env.GEMINI_MODEL?.trim() || 'gemini-3.1-flash-lite';
+const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash-lite';
 const ai = key ? new GoogleGenAI({ apiKey: key }) : null;
 const defaultOrigins = [
   'http://127.0.0.1:4178',
   'http://localhost:4178',
-  'mutirao-pontobot-frontend.vercel.app',
+  'https://mutirao-pontobot-frontend.vercel.app',
   'https://mutirao-citizen-tech.vercel.app',
 ];
 const origins = new Set(process.env.CORS_ORIGINS?.split(',').map((origin) => origin.trim()).filter(Boolean) ?? defaultOrigins);
@@ -79,8 +79,8 @@ app.post('/api/chat', parseBody, async (req, res) => {
       },
     });
     return res.json(getModelAnswer(response.text));
-  } catch {
-    console.warn('PontoBOT: Gemini indisponível ou retornou uma resposta inválida.');
+  } catch (error) {
+    console.warn('PontoBOT: Gemini indisponível ou retornou uma resposta inválida.', error?.message ?? error);
     return res.json(getFallback(question));
   }
 });
