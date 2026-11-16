@@ -1,40 +1,162 @@
-# PontoBOT com Gemini
+# PontoBOT — Assistente de Navegação do Mutirão
 
-O PontoBOT orienta famílias e cuidadores a usar a Agenda, os Documentos e o Diário de turno do Mutirão. O Gemini recebe a pergunta e até três trocas recentes para entender referências. As instruções do assistente partem de uma base de ajuda cadastrada. O servidor escolhe links de uma lista de rotas do Mutirão.
+Assistente virtual desenvolvido para ser integrado ao projeto **[Mutirão (`CitizenTechFIAPChallenge`)](https://github.com/mewmewdevart/CitizenTechFIAPChallenge)**, orientando familiares e cuidadores a encontrar telas e funcionalidades da plataforma (Agenda, Documentos, Diário de turno e Ajuda). Combina um **Web Component** isolado em Shadow DOM no frontend com uma API **Express + Google Gemini** no backend e fallback local automático.
 
-- `front/` reúne a demonstração e o componente `<ponto-bot>`.
-- `back/` reúne o servidor Express, a base de ajuda e a integração com `@google/genai`.
-- `POST /api/chat` recebe `question` e um `history` opcional com pares `{ role, text }`. Retorna `reply`, `action` e `source` (`gemini` ou `faq`). O FAQ entra em ação se o Gemini estiver indisponível ou sem chave.
-- `GET /api/health` informa se a chave foi configurada e qual modelo será usado. A verificação da API do Google acontece ao conversar.
+- **Projeto principal (Mutirão / CitizenTechFIAPChallenge):** https://github.com/mewmewdevart/CitizenTechFIAPChallenge
+- **Aplicação Mutirão no ar:** https://mutirao-citizen-tech.vercel.app/
+- **Frontend / Demo do PontoBOT:** https://mutirao-pontobot-frontend.vercel.app/
+- **Backend (Health check):** https://mutirao-pontobot-backend.vercel.app/api/health
 
-## Atualizar o projeto que já está na Vercel
+---
 
-1. Atualize `front/` e `back/` no repositório do PontoBOT. Se estiver copiando os arquivos sobre a versão anterior, exclua `back/api/chat.js` e `back/vercel.json` antigos. A rota agora está em `back/app.js`.
-2. No projeto `pontobot-back`, mantenha **Root Directory** em `back` e configure o preset **Express**. Use os padrões de build e saída. O `app.js` exporta a aplicação para a Vercel.
-3. Em **Settings → Environment Variables** do backend, adicione `GEMINI_API_KEY` com uma chave do [Google AI Studio](https://aistudio.google.com/apikey). A chave pertence apenas ao backend. `GEMINI_MODEL` é opcional e o padrão é `gemini-3.1-flash-lite`.
-4. Se os domínios do frontend ou do Mutirão forem diferentes dos exemplos, adicione `CORS_ORIGINS` no backend. Separe as origens por vírgula e use esquema e host, sem barra final. Ao definir esse campo, inclua todas as origens que devem ter acesso. Veja `back/.env.example`.
-5. Publique o backend e acesse `/api/health`. Em seguida, confirme uma resposta `source: "gemini"` com o teste abaixo. Se o status de configuração estiver correto e a resposta vier do FAQ, revise acesso ao modelo, chave, cota e logs.
-6. No projeto `pontobot-front`, mantenha **Root Directory** em `front` e preset **Other**. `front/vercel.json` encaminha a rota do chatbot para `https://pontobot-back.vercel.app/api/chat`. Ajuste o destino somente se o domínio do backend mudar.
+## Principais recursos
 
-Teste pelo PowerShell:
+- **Widget flutuante ou embutido:** Por padrão, `<ponto-bot>` aparece como um botão circular no canto inferior direito que se oculta ao abrir o chat; com o atributo `inline`, renderiza aberto diretamente no fluxo da página.
+- **Acessibilidade e responsividade:** Gerenciamento de foco ao abrir/fechar, fechamento por `Esc`, `role="log"` no histórico, `role="status"` no carregamento, suporte a `prefers-reduced-motion` e adaptação automática para telas pequenas (`<= 480px`).
+- **IA com Gemini + Fallback resiliente:** Usa `@google/genai` (`gemini-3.5-flash-lite` por padrão) com saída estruturada em JSON e instrução de sistema focada em linguagem simples e segura. Se o Gemini falhar ou atingir cota, responde automaticamente pela base local de FAQ (`source: "faq"`).
+- **Privacidade:** O histórico fica apenas em memória no navegador (limitado às últimas 3 trocas). O servidor não acessa fichas, documentos ou registros do Mutirão.
 
-```powershell
-$body = @{ question = 'Ninguém vai poder cuidar da Mari à tarde. Onde vejo quem pode assumir?' } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri 'https://pontobot-back.vercel.app/api/chat' -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
+---
+
+## Estrutura do projeto
+
+```text
+PontoBOT/
+├── back/
+│   ├── lib/
+│   │   └── knowledge.js   # Tópicos, rotas, prompt do sistema e fallback
+│   ├── app.js             # Aplicação Express (CORS, validação, /api/chat, /api/health)
+│   ├── dev.js             # Servidor local da API
+│   └── package.json
+├── front/
+│   ├── favicon_io/
+│   ├── avatar.svg
+│   ├── demo.css           # Estilos da página de demonstração
+│   ├── index.html         # Página de demonstração (<ponto-bot inline>)
+│   ├── pontobot.css       # Estilos do Web Component (Shadow DOM)
+│   ├── pontobot.js        # Implementação do elemento <ponto-bot>
+│   └── vercel.json        # Header CORS de /pontobot.js e rewrite de /api/chat
+├── preview.mjs            # Servidor local integrado (front + API)
+├── LICENSE                # Licença MIT
+└── README.md
 ```
 
-O histórico fica em memória no navegador e é enviado em cada pergunta, limitado a três trocas. O servidor encaminha o texto ao Gemini e não lê fichas, documentos ou registros do Mutirão. Oriente os usuários a evitar dados pessoais e de saúde. Para uma API pública, trate CORS como controle do navegador e aplique limites de uso no gateway ou na Vercel e na conta do provedor para proteger a cota.
+---
 
-## Testar localmente
+## Como incorporar em uma página
 
-Com Node.js 22, execute `npm --prefix back install` na raiz do projeto. Copie `back/.env.example` para `back/.env` e preencha `GEMINI_API_KEY`. Execute `node preview.mjs` e abra [http://127.0.0.1:4178](http://127.0.0.1:4178). Para executar só a API, use `npm --prefix back run dev`.
-
-## Incorporar na Ajuda do Mutirão
+### Modo widget flutuante (padrão)
 
 ```html
-<script type="module" src="mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
+<script type="module" src="https://mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
 <ponto-bot data-app="https://mutirao-citizen-tech.vercel.app/"></ponto-bot>
 ```
 
-Substitua o domínio do módulo pelo domínio real do frontend, se necessário. O componente herda as variáveis CSS do Mutirão. Para apontar diretamente à API, informe a URL completa no atributo opcional `data-api`.
+### Modo embutido (inline)
 
+```html
+<script type="module" src="https://mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
+<ponto-bot inline data-app="https://mutirao-citizen-tech.vercel.app/"></ponto-bot>
+```
+
+### Atributos suportados
+
+| Atributo | Obrigatório | Descrição |
+| :--- | :--- | :--- |
+| `data-app` | Não | URL base do Mutirão usada para montar os links de atalho (padrão: `https://mutirao-citizen-tech.vercel.app/`). |
+| `data-api` | Não | URL completa do endpoint `POST /api/chat` (padrão: `/api/chat` na origem do módulo `pontobot.js`). |
+| `inline` | Não | Quando presente, exibe o painel aberto no fluxo da página em vez do botão flutuante. |
+
+O componente também herda variáveis CSS do tema do Mutirão (como `--cor-primaria`, `--cor-superficie`, `--cor-texto-principal` e `--fonte-interface`) quando disponíveis na página hospedeira.
+
+---
+
+## Rodar localmente
+
+**Pré-requisitos:** Node.js `22.x` e uma chave da [Google AI Studio](https://aistudio.google.com/apikey).
+
+1. Instale as dependências do backend:
+   ```bash
+   npm --prefix back install
+   ```
+
+2. Crie o arquivo `back/.env` com suas variáveis:
+   ```env
+   GEMINI_API_KEY=sua_chave_aqui
+   # Opcionais:
+   # GEMINI_MODEL=gemini-3.5-flash-lite
+   # CORS_ORIGINS=http://127.0.0.1:4178,http://localhost:4178
+   ```
+
+3. Inicie o preview integrado (frontend + backend):
+   ```bash
+   node preview.mjs
+   ```
+   Acesse **http://127.0.0.1:4178**.
+
+   > Para executar somente a API em modo watch, use `npm --prefix back run dev`.
+
+---
+
+## Endpoints da API
+
+### `GET /api/health` (ou `GET /`)
+Verifica se o serviço está ativo e se a chave do Gemini foi configurada.
+
+```json
+{
+  "status": "ok",
+  "geminiConfigured": true,
+  "model": "gemini-3.5-flash-lite"
+}
+```
+
+### `POST /api/chat`
+Envia uma pergunta (até `240` caracteres) e um histórico opcional com até `6` itens alternados (`user` / `model`).
+
+**Requisição:**
+```json
+{
+  "question": "Como assumo um turno?",
+  "history": []
+}
+```
+
+**Resposta:**
+```json
+{
+  "reply": "Na Agenda, encontre o horário sem cobertura, confira as orientações do turno e confirme que você vai assumir.",
+  "action": {
+    "path": "/agenda.html",
+    "label": "Abrir Agenda"
+  },
+  "source": "gemini"
+}
+```
+
+**Teste rápido pelo PowerShell:**
+```powershell
+$body = @{ question = 'Como assumo um turno?' } | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri 'https://mutirao-pontobot-backend.vercel.app/api/chat' -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
+```
+
+---
+
+## Deploy na Vercel
+
+O repositório é publicado em dois projetos separados na Vercel:
+
+1. **Backend (`mutirao-pontobot-backend`):**
+   - **Root Directory:** `back`
+   - **Framework Preset:** `Express`
+   - **Environment Variables:** adicione `GEMINI_API_KEY` (e opcionalmente `GEMINI_MODEL` e `CORS_ORIGINS`).
+2. **Frontend (`mutirao-pontobot-frontend`):**
+   - **Root Directory:** `front`
+   - **Framework Preset:** `Other`
+   - O arquivo `front/vercel.json` habilita CORS para `/pontobot.js` e encaminha `/api/chat` para `https://mutirao-pontobot-backend.vercel.app/api/chat`.
+
+---
+
+## Licença
+
+Distribuído sob a licença **MIT**. Veja [LICENSE](LICENSE) para mais detalhes.
