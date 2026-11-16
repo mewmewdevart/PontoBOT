@@ -67,9 +67,6 @@ template.innerHTML = `
   </section>
   <button class="launcher" type="button" aria-expanded="false" aria-controls="bot-panel" aria-label="Abrir assistente PontoBOT">
     <img class="launcher-avatar" src="${avatar}" alt="" width="56" height="56" aria-hidden="true">
-    <svg class="launcher-close" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
-      <path d="M18 6 6 18M6 6l12 12"/>
-    </svg>
   </button>`;
 
 class PontoBot extends HTMLElement {
@@ -129,8 +126,8 @@ class PontoBot extends HTMLElement {
     const inline = this.hasAttribute('inline');
     const open = this.isOpen;
     this.panel.hidden = !inline && !open;
+    this.launcher.hidden = inline || open;
     this.launcher.setAttribute('aria-expanded', String(open));
-    this.launcher.setAttribute('aria-label', open ? 'Fechar assistente PontoBOT' : 'Abrir assistente PontoBOT');
   }
 
   open() {
