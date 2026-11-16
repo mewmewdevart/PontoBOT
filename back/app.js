@@ -11,7 +11,7 @@ const app = express();
 app.disable('x-powered-by');
 
 const key = process.env.GEMINI_API_KEY?.trim();
-const model = process.env.GEMINI_MODEL?.trim() || 'gemini-2.5-flash-lite';
+const model = process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash-lite';
 const ai = key ? new GoogleGenAI({ apiKey: key }) : null;
 const defaultOrigins = [
   'http://127.0.0.1:4178',
