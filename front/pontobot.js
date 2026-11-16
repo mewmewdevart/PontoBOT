@@ -1,4 +1,5 @@
 const stylesheet = new URL('./pontobot.css', import.meta.url).href;
+const avatar = new URL('./avatar.svg', import.meta.url).href;
 const defaultApi = new URL('./api/chat', import.meta.url).href;
 const defaultApp = 'https://mutirao-citizen-tech.vercel.app/';
 const suggestions = [
@@ -7,12 +8,41 @@ const suggestions = [
   'Como registro a passagem de cuidado?',
 ];
 
+const localTopics = [
+  {
+    match: /\b(passagem|diario|relatos?|registr\w*|ficha|rotina|aconteceu)\b/,
+    reply: 'Na Ficha, vá até Diário de turno e selecione Registrar relato. Anote o que aconteceu e o que a próxima pessoa precisa acompanhar.',
+    action: { path: '/ficha.html#diario', label: 'Abrir Diário de turno' },
+  },
+  {
+    match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?)\b/,
+    reply: 'Na tela Documentos, você pode consultar os arquivos da pessoa acompanhada.',
+    action: { path: '/documentos.html', label: 'Abrir Documentos' },
+  },
+  {
+    match: /\b(agenda|escala|cobertura|assum\w*|plantao|turnos?|horarios?)\b/,
+    reply: 'Na Agenda, encontre o horário sem cobertura, confira as orientações do turno e confirme que você vai assumir.',
+    action: { path: '/agenda.html', label: 'Abrir Agenda' },
+  },
+];
+
+const defaultLocalTopic = {
+  reply: 'Posso ajudar a usar a Agenda, os Documentos e o Diário de turno. Para outras dúvidas sobre a plataforma, consulte a tela de Ajuda.',
+  action: { path: '/ajuda.html', label: 'Abrir Ajuda' },
+};
+
+function getLocalFallback(question) {
+  const normalized = question.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
+  const topic = localTopics.find((entry) => entry.match.test(normalized)) ?? defaultLocalTopic;
+  return { reply: topic.reply, action: topic.action };
+}
+
 const template = document.createElement('template');
 template.innerHTML = `
   <link rel="stylesheet" href="${stylesheet}">
   <section class="panel" aria-labelledby="bot-title">
     <header>
-      <span class="mark" aria-hidden="true">●</span>
+      <img class="mark" src="${avatar}" alt="" width="44" height="44" aria-hidden="true">
       <div><h2 id="bot-title">PontoBOT</h2><p>Assistente do Mutirão</p></div>
     </header>
     <div class="body">
@@ -105,8 +135,12 @@ class PontoBot extends HTMLElement {
       this.status.textContent = '';
       if (this.input.value.trim() === question) this.input.value = '';
     } catch {
-      message.remove();
-      this.status.textContent = 'Não consegui carregar a resposta. Tente de novo em instantes.';
+      const fallback = getLocalFallback(question);
+      this.appendMessage(fallback.reply, 'bot', fallback.action);
+      this.history.push({ role: 'user', text: question }, { role: 'model', text: fallback.reply });
+      this.history = this.history.slice(-6);
+      this.status.textContent = 'Respondendo com a base local de ajuda.';
+      if (this.input.value.trim() === question) this.input.value = '';
     } finally {
       this.pending = false;
       for (const button of this.buttons) button.disabled = false;

@@ -21,15 +21,11 @@ header {
 }
 .mark {
   flex: 0 0 2.75rem;
-  display: grid;
-  place-items: center;
+  display: block;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: .875rem;
-  background: var(--cor-primaria, #4B5DA9);
-  color: var(--cor-fundo-pagina, #F5F6F5);
-  font-size: 1.75rem;
-  line-height: 1;
+  border-radius: 50%;
+  object-fit: cover;
 }
 h2, p { margin: 0; }
 h2 { font-size: 1.125rem; line-height: 1.25; }
@@ -51,14 +47,15 @@ header p { color: var(--cor-texto-secundario, #50596E); font-size: .875rem; }
   max-width: 92%;
   padding: .75rem .875rem;
   border-radius: .25rem .875rem .875rem .875rem;
-  background: var(--cor-superficie-suave, #E8EBFB);
+  color: #433859;
+  background: #F2F4F5;
   overflow-wrap: anywhere;
 }
 .user {
   align-self: flex-end;
   border-radius: .875rem .25rem .875rem .875rem;
-  color: var(--cor-fundo-pagina, #F5F6F5);
-  background: var(--cor-primaria, #4B5DA9);
+  color: #433859;
+  background: #DCF7C5;
 }
 .bubble a {
   display: inline-flex;
