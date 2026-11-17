@@ -1,25 +1,67 @@
 export const topics = {
+  inicio: {
+    title: 'Tela inicial, porta-remédios, registrar cuidado e busca global',
+    reply: 'No Início, você acompanha o turno atual, o porta-remédios interativo e alertas de cobertura ou estoque baixo. Pelo botão Registrar cuidado, é possível salvar um relato na Ficha ou criar um compromisso direto na Agenda, além de usar a barra de pesquisa inteligente no topo.',
+    action: { path: '/index.html', label: 'Abrir Início' },
+    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|pesquis\w*|busca\w*|notificac\w*)\b/,
+  },
+  medicamentos: {
+    title: 'Medicamentos, insumos, rotina de doses e estoque',
+    reply: 'Em Medicamentos e insumos, a aba Rotina e horários mostra as doses do dia, atrasos e registros. Na aba Itens e estoque, você gerencia medicamentos, insumos sem horário (como fraldas), reposição de estoque e detalhes de cada item.',
+    action: { path: '/medicamentos.html', label: 'Abrir Medicamentos' },
+    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
+  },
   agenda: {
-    title: 'Agenda, escala, cobertura ou como assumir um turno',
-    reply: 'Na Agenda, encontre o horário sem cobertura, confira as orientações do turno e confirme que você vai assumir.',
+    title: 'Agenda, escala semanal, cobertura e compromissos',
+    reply: 'Na Agenda, você consulta a escala semanal, assume horários sem cobertura, atribui ou edita turnos e cadastra, edita ou exclui compromissos e exames, podendo também compartilhar ou exportar em arquivo .ics.',
     action: { path: '/agenda.html', label: 'Abrir Agenda' },
-    match: /\b(agenda|escala|cobertura|assum\w*|plantao|turnos?|horarios?)\b/,
+    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|compromissos?|consultas?|exportar|ics)\b/,
   },
   documentos: {
-    title: 'Documentos da pessoa acompanhada e onde encontrar arquivos da consulta',
-    reply: 'Na tela Documentos, você pode consultar os arquivos da pessoa acompanhada.',
+    title: 'Documentos, receitas, exames e onde encontrar originais',
+    reply: 'Em Documentos, você filtra por Receitas, Exames ou Outros documentos, pesquisa por título ou assunto, vê onde está o arquivo original e acessa o atendimento vinculado na Agenda.',
     action: { path: '/documentos.html', label: 'Abrir Documentos' },
-    match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?)\b/,
+    match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?|pasta|original)\b/,
   },
   diario: {
-    title: 'Passagem de cuidado, Diário de turno e como registrar um relato',
-    reply: 'Na Ficha, vá até Diário de turno e selecione Registrar relato. Anote o que aconteceu e o que a próxima pessoa precisa acompanhar.',
+    title: 'Ficha de saúde, alergias, consultas e Diário de turno',
+    reply: 'Na Ficha, você confere alergias, condições de saúde, contatos de emergência, o resumo clicável de Consultas e exames e o Diário de turno. Em Registrar relato, você pode vincular a entrada a um turno específico ou salvar como registro geral.',
     action: { path: '/ficha.html#diario', label: 'Abrir Diário de turno' },
-    match: /\b(passagem|diario|relatos?|registr\w*|ficha|rotina|aconteceu)\b/,
+    match: /\b(passagem|diario|relatos?|registr\w*|ficha|alergias?|historico|imprimir|impressao|emergencia)\b/,
+  },
+  pessoas: {
+    title: 'Pessoas da rede, cuidadores e convites',
+    reply: 'Em Pessoas da rede, você visualiza quem recebe cuidado e os participantes ativos, além de enviar ou cancelar convites simulados para novos familiares e cuidadores.',
+    action: { path: '/pessoas.html', label: 'Abrir Pessoas da rede' },
+    match: /\b(pessoas?|rede|participantes?|cuidadores?|familia\w*|convites?|convidar)\b/,
+  },
+  perfil: {
+    title: 'Meu perfil, recado, figurinhas e pedidos de folga',
+    reply: 'Em Meu perfil, você edita seus dados pessoais, escolhe avatar ou mascote, publica recados para a rede, reage com figurinhas e registra pedidos de folga.',
+    action: { path: '/meu-perfil.html', label: 'Abrir Meu perfil' },
+    match: /\b(perfil|recados?|figurinhas?|folgas?|avatar|mascote|meus\s*dados)\b/,
+  },
+  direitos: {
+    title: 'Direitos, benefícios sociais e serviços públicos',
+    reply: 'Em Direitos e serviços, você encontra guias sobre SUS, Farmácia Popular, BPC/LOAS e Estatuto da Pessoa Idosa, além de um simulador de direitos e busca de serviços por CEP.',
+    action: { path: '/direitos.html', label: 'Abrir Direitos e serviços' },
+    match: /\b(direitos?|servicos?|beneficios?|sus|farmacia\s*popular|bpc|loas|inss|cras|caps|cep|estatuto|simulador)\b/,
+  },
+  configuracoes: {
+    title: 'Configurações, temas, acessibilidade e notificações',
+    reply: 'Em Configurações, você alterna entre os temas neutro, acolhedor e alto contraste, ajusta o tamanho da fonte e ativa ou desativa lembretes de medicação, relatos e o som das notificações.',
+    action: { path: '/configuracoes.html', label: 'Abrir Configurações' },
+    match: /\b(configurac\w*|temas?|acolhedor|contraste|acessibilidade|fonte|som|silenciar|preferencias?)\b/,
+  },
+  privacidade: {
+    title: 'Privacidade e uso de dados na simulação',
+    reply: 'Na tela Privacidade, você consulta como os dados fictícios são tratados na demonstração local do navegador e quais informações permanecem apenas na sessão atual.',
+    action: { path: '/privacidade.html', label: 'Abrir Privacidade' },
+    match: /\b(privacidade|lgpd|dados|sessao|seguranca|armazenamento)\b/,
   },
   ajuda: {
     title: 'Dúvidas gerais sobre o Mutirão ou perguntas fora do escopo',
-    reply: 'Posso ajudar a usar a Agenda, os Documentos e o Diário de turno. Para outras dúvidas sobre a plataforma, consulte a tela de Ajuda.',
+    reply: 'Posso ajudar a navegar pelo Início, Agenda, Medicamentos e insumos, Documentos, Ficha e Diário de turno, Pessoas da rede, Direitos e Configurações. Para outras dúvidas, consulte a tela de Ajuda.',
     action: { path: '/ajuda.html', label: 'Abrir Ajuda' },
   },
 };
@@ -50,16 +92,29 @@ RESPEITO E NÃO DISCRIMINAÇÃO
 
 FORMATO DA RESPOSTA
 - Retorne apenas um objeto JSON com \`topic\` e \`reply\`, conforme o esquema fornecido pela API.
-- Escolha exatamente um tópico entre \`agenda\`, \`documentos\`, \`diario\` e \`ajuda\`. Use \`ajuda\` quando a dúvida estiver fora do escopo ou precisar de esclarecimento.
+- Escolha exatamente um tópico entre: ${Object.keys(topics).join(', ')}. Use \`ajuda\` quando a dúvida estiver fora do escopo ou precisar de esclarecimento.
 - Escreva \`reply\` em texto simples, sem Markdown ou URLs. O backend seleciona o atalho correspondente ao tópico.
 
 Base de orientação:
 ${Object.entries(topics).map(([id, topic]) => `- ${id} (${topic.title}): ${topic.reply}`).join('\n')}
 `;
 
+const fallbackOrder = [
+  topics.medicamentos,
+  topics.diario,
+  topics.documentos,
+  topics.agenda,
+  topics.direitos,
+  topics.configuracoes,
+  topics.pessoas,
+  topics.perfil,
+  topics.privacidade,
+  topics.inicio,
+];
+
 export function getFallback(question) {
   const normalized = question.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
-  const topic = [topics.diario, topics.documentos, topics.agenda].find((entry) => entry.match.test(normalized));
+  const topic = fallbackOrder.find((entry) => entry.match.test(normalized));
   const { reply, action } = topic ?? topics.ajuda;
   return { reply, action, source: 'faq' };
 }
@@ -71,4 +126,3 @@ export function getModelAnswer(text) {
   if (!reply || reply.length > 700) throw new Error('invalid_response');
   return { reply, action: topics[result.topic].action, source: 'gemini' };
 }
-
