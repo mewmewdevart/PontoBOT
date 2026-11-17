@@ -2,7 +2,7 @@ export const topics = {
   inicio: {
     title: 'Tela inicial, porta-remédios, registrar cuidado e busca global',
     reply: 'No Início, você acompanha o turno atual, o porta-remédios interativo e alertas de cobertura ou estoque baixo. Pelo botão Registrar cuidado, é possível salvar um relato na Ficha ou criar um compromisso direto na Agenda, além de usar a barra de pesquisa inteligente no topo.',
-    action: { path: '/index.html', label: 'Abrir Início' },
+    action: { path: '/home.html', label: 'Abrir Início' },
     match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|pesquis\w*|busca\w*|notificac\w*)\b/,
   },
   medicamentos: {

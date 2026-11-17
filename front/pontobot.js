@@ -58,7 +58,7 @@ const localTopics = [
   {
     match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|pesquis\w*|busca\w*|notificac\w*)\b/,
     reply: 'No Início, você acompanha o porta-remédios interativo, registra cuidados para a Ficha ou Agenda e usa a busca inteligente no topo.',
-    action: { path: '/index.html', label: 'Abrir Início' },
+    action: { path: '/home.html', label: 'Abrir Início' },
   },
 ];
 

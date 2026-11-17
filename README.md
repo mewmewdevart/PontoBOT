@@ -32,7 +32,7 @@ PontoBOT/
 │   ├── favicon_io/
 │   ├── avatar.svg
 │   ├── demo.css           # Estilos da página de demonstração
-│   ├── index.html         # Página de demonstração (<ponto-bot inline>)
+│   ├── home.html         # Página de demonstração (<ponto-bot inline>)
 │   ├── pontobot.css       # Estilos do Web Component (Shadow DOM)
 │   ├── pontobot.js        # Implementação do elemento <ponto-bot>
 │   └── vercel.json        # Header CORS de /pontobot.js e rewrite de /api/chat
