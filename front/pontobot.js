@@ -4,30 +4,66 @@ const defaultApi = new URL('./api/chat', import.meta.url).href;
 const defaultApp = 'https://mutirao-citizen-tech.vercel.app/';
 const suggestions = [
   'Como assumo um turno?',
+  'Como registro um medicamento ou estoque?',
   'Onde estão os documentos?',
   'Como registro a passagem de cuidado?',
 ];
 
 const localTopics = [
   {
-    match: /\b(passagem|diario|relatos?|registr\w*|ficha|rotina|aconteceu)\b/,
-    reply: 'Na Ficha, vá até Diário de turno e selecione Registrar relato. Anote o que aconteceu e o que a próxima pessoa precisa acompanhar.',
+    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
+    reply: 'Em Medicamentos e insumos, a aba Rotina e horários mostra as doses do dia. Na aba Itens e estoque, você gerencia medicamentos, insumos sem horário (como fraldas) e reposição de estoque.',
+    action: { path: '/medicamentos.html', label: 'Abrir Medicamentos' },
+  },
+  {
+    match: /\b(passagem|diario|relatos?|registr\w*|ficha|alergias?|historico|imprimir|impressao|emergencia)\b/,
+    reply: 'Na Ficha, você confere alergias, Consultas e exames e o Diário de turno. Em Registrar relato, você pode vincular a um turno ou salvar como registro geral.',
     action: { path: '/ficha.html#diario', label: 'Abrir Diário de turno' },
   },
   {
-    match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?)\b/,
-    reply: 'Na tela Documentos, você pode consultar os arquivos da pessoa acompanhada.',
+    match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?|pasta|original)\b/,
+    reply: 'Em Documentos, você filtra por categoria, pesquisa arquivos, vê onde está o original e acessa o atendimento vinculado na Agenda.',
     action: { path: '/documentos.html', label: 'Abrir Documentos' },
   },
   {
-    match: /\b(agenda|escala|cobertura|assum\w*|plantao|turnos?|horarios?)\b/,
-    reply: 'Na Agenda, encontre o horário sem cobertura, confira as orientações do turno e confirme que você vai assumir.',
+    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|compromissos?|consultas?|exportar|ics)\b/,
+    reply: 'Na Agenda, você consulta a escala semanal, assume horários sem cobertura e cadastra, edita ou exclui compromissos.',
     action: { path: '/agenda.html', label: 'Abrir Agenda' },
+  },
+  {
+    match: /\b(direitos?|servicos?|beneficios?|sus|farmacia\s*popular|bpc|loas|inss|cras|caps|cep|estatuto|simulador)\b/,
+    reply: 'Em Direitos e serviços, você encontra guias de benefícios públicos, simulador de direitos e busca de serviços por CEP.',
+    action: { path: '/direitos.html', label: 'Abrir Direitos e serviços' },
+  },
+  {
+    match: /\b(configurac\w*|temas?|acolhedor|contraste|acessibilidade|fonte|som|silenciar|preferencias?)\b/,
+    reply: 'Em Configurações, você muda o tema, ajusta a fonte e ativa ou desativa alertas e som das notificações.',
+    action: { path: '/configuracoes.html', label: 'Abrir Configurações' },
+  },
+  {
+    match: /\b(pessoas?|rede|participantes?|cuidadores?|familia\w*|convites?|convidar)\b/,
+    reply: 'Em Pessoas da rede, você acompanha os participantes ativos e gerencia convites para novos familiares e cuidadores.',
+    action: { path: '/pessoas.html', label: 'Abrir Pessoas da rede' },
+  },
+  {
+    match: /\b(perfil|recados?|figurinhas?|folgas?|avatar|mascote|meus\s*dados)\b/,
+    reply: 'Em Meu perfil, você edita seus dados, escolhe avatar ou mascote, publica recados e registra pedidos de folga.',
+    action: { path: '/meu-perfil.html', label: 'Abrir Meu perfil' },
+  },
+  {
+    match: /\b(privacidade|lgpd|dados|sessao|seguranca|armazenamento)\b/,
+    reply: 'Na tela Privacidade, você consulta como os dados fictícios são tratados na sessão atual do navegador.',
+    action: { path: '/privacidade.html', label: 'Abrir Privacidade' },
+  },
+  {
+    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|pesquis\w*|busca\w*|notificac\w*)\b/,
+    reply: 'No Início, você acompanha o porta-remédios interativo, registra cuidados para a Ficha ou Agenda e usa a busca inteligente no topo.',
+    action: { path: '/index.html', label: 'Abrir Início' },
   },
 ];
 
 const defaultLocalTopic = {
-  reply: 'Posso ajudar a usar a Agenda, os Documentos e o Diário de turno. Para outras dúvidas sobre a plataforma, consulte a tela de Ajuda.',
+  reply: 'Posso ajudar a navegar pelo Início, Agenda, Medicamentos e insumos, Documentos, Ficha e Diário de turno, Pessoas, Direitos e Configurações. Para outras dúvidas, consulte a tela de Ajuda.',
   action: { path: '/ajuda.html', label: 'Abrir Ajuda' },
 };
 
