@@ -1,21 +1,21 @@
 export const topics = {
   inicio: {
-    title: 'Tela inicial, porta-remédios, registrar cuidado e busca global',
-    reply: 'No Início, você acompanha o turno atual, o porta-remédios interativo e alertas de cobertura ou estoque baixo. Pelo botão Registrar cuidado, é possível salvar um relato na Ficha ou criar um compromisso direto na Agenda, além de usar a barra de pesquisa inteligente no topo.',
+    title: 'Tela inicial, porta-remédios, anotar o turno e busca global',
+    reply: 'No Início, você acompanha o turno atual, o porta-remédios interativo, a escala da semana e alertas de cobertura ou estoque baixo. Pelo botão Anotar o turno, é possível salvar um relato na Ficha ou criar um compromisso direto na Agenda, além de usar a busca no topo e o seletor Quem recebe cuidado.',
     action: { path: '/home.html', label: 'Abrir Início' },
-    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|pesquis\w*|busca\w*|notificac\w*)\b/,
+    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|anotar\s*(o\s*)?turno|pesquis\w*|busca\w*|notificac\w*|quem\s*recebe\s*cuidado)\b/,
   },
   medicamentos: {
-    title: 'Medicamentos, insumos, rotina de doses e estoque',
-    reply: 'Em Medicamentos e insumos, a aba Rotina e horários mostra as doses do dia, atrasos e registros. Na aba Itens e estoque, você gerencia medicamentos, insumos sem horário (como fraldas), reposição de estoque e detalhes de cada item.',
+    title: 'Medicamentos, materiais, rotina de doses e estoque',
+    reply: 'Em Medicamentos (Remédios e materiais), a aba Rotina e horários mostra as doses do dia, atrasos e registros. Na aba Itens e estoque, você gerencia medicamentos, materiais sem horário (como fraldas), reposição de estoque e detalhes de cada item.',
     action: { path: '/medicamentos.html', label: 'Abrir Medicamentos' },
-    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
+    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|materiais?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
   },
   agenda: {
-    title: 'Agenda, escala semanal, cobertura e compromissos',
-    reply: 'Na Agenda, você consulta a escala semanal, assume horários sem cobertura, atribui ou edita turnos e cadastra, edita ou exclui compromissos e exames, podendo também compartilhar ou exportar em arquivo .ics.',
+    title: 'Agenda, escala semanal, turnos recorrentes e compromissos',
+    reply: 'Na Agenda, você consulta o calendário mensal e a escala semanal, adiciona turnos pontuais, semanais ou diários, pede cobertura para alguém, edita ou cancela horários e cadastra, edita ou exclui compromissos, podendo também compartilhar ou baixar o calendário (.ics).',
     action: { path: '/agenda.html', label: 'Abrir Agenda' },
-    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|compromissos?|consultas?|exportar|ics)\b/,
+    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|recorren\w*|semanal|pontual|compromissos?|consultas?|exportar|baixar|ics)\b/,
   },
   documentos: {
     title: 'Documentos, receitas, exames e onde encontrar originais',
@@ -24,10 +24,10 @@ export const topics = {
     match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?|pasta|original)\b/,
   },
   diario: {
-    title: 'Ficha de saúde, alergias, consultas e Diário de turno',
-    reply: 'Na Ficha, você confere alergias, condições de saúde, contatos de emergência, o resumo clicável de Consultas e exames e o Diário de turno. Em Registrar relato, você pode vincular a entrada a um turno específico ou salvar como registro geral.',
+    title: 'Ficha de saúde, acompanhamento, consultas e Diário de turno',
+    reply: 'Na Ficha, você confere alergias, condições de saúde, contatos, a necessidade de acompanhamento (e encerramento de repetições semanais em Editar ficha) e o Diário de turno. Pelo botão Anotar como foi, você pode vincular a anotação a um turno ou salvar como registro geral.',
     action: { path: '/ficha.html#diario', label: 'Abrir Diário de turno' },
-    match: /\b(passagem|diario|relatos?|registr\w*|ficha|alergias?|historico|imprimir|impressao|emergencia)\b/,
+    match: /\b(passagem|diario|relatos?|registr\w*|anotar\s*como\s*foi|ficha|alergias?|historico|imprimir|impressao|emergencia|acompanhamento)\b/,
   },
   pessoas: {
     title: 'Pessoas da rede, cuidadores e convites',

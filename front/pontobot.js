@@ -11,13 +11,13 @@ const suggestions = [
 
 const localTopics = [
   {
-    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
-    reply: 'Em Medicamentos e insumos, a aba Rotina e horários mostra as doses do dia. Na aba Itens e estoque, você gerencia medicamentos, insumos sem horário (como fraldas) e reposição de estoque.',
+    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|materiais?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
+    reply: 'Em Medicamentos (Remédios e materiais), a aba Rotina e horários mostra as doses do dia. Na aba Itens e estoque, você gerencia medicamentos, materiais sem horário (como fraldas) e reposição de estoque.',
     action: { path: '/medicamentos.html', label: 'Abrir Medicamentos' },
   },
   {
-    match: /\b(passagem|diario|relatos?|registr\w*|ficha|alergias?|historico|imprimir|impressao|emergencia)\b/,
-    reply: 'Na Ficha, você confere alergias, Consultas e exames e o Diário de turno. Em Registrar relato, você pode vincular a um turno ou salvar como registro geral.',
+    match: /\b(passagem|diario|relatos?|registr\w*|anotar\s*como\s*foi|ficha|alergias?|historico|imprimir|impressao|emergencia|acompanhamento)\b/,
+    reply: 'Na Ficha, você confere alergias, Consultas e exames, a necessidade de acompanhamento em Editar ficha e o Diário de turno. Pelo botão Anotar como foi, você vincula a anotação a um turno ou salva como registro geral.',
     action: { path: '/ficha.html#diario', label: 'Abrir Diário de turno' },
   },
   {
@@ -26,8 +26,8 @@ const localTopics = [
     action: { path: '/documentos.html', label: 'Abrir Documentos' },
   },
   {
-    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|compromissos?|consultas?|exportar|ics)\b/,
-    reply: 'Na Agenda, você consulta a escala semanal, assume horários sem cobertura e cadastra, edita ou exclui compromissos.',
+    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|recorren\w*|semanal|pontual|compromissos?|consultas?|exportar|baixar|ics)\b/,
+    reply: 'Na Agenda, você consulta a escala semanal, adiciona turnos pontuais, semanais ou diários, pede cobertura para alguém, edita ou cancela horários e gerencia compromissos, podendo baixar o calendário (.ics).',
     action: { path: '/agenda.html', label: 'Abrir Agenda' },
   },
   {
@@ -56,8 +56,8 @@ const localTopics = [
     action: { path: '/privacidade.html', label: 'Abrir Privacidade' },
   },
   {
-    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|pesquis\w*|busca\w*|notificac\w*)\b/,
-    reply: 'No Início, você acompanha o porta-remédios interativo, registra cuidados para a Ficha ou Agenda e usa a busca inteligente no topo.',
+    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|anotar\s*(o\s*)?turno|pesquis\w*|busca\w*|notificac\w*|quem\s*recebe\s*cuidado)\b/,
+    reply: 'No Início, você acompanha o porta-remédios interativo, a escala da semana, anota o turno pelo botão Anotar o turno (para a Ficha ou Agenda) e usa a busca no topo.',
     action: { path: '/home.html', label: 'Abrir Início' },
   },
 ];
