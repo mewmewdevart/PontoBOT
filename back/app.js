@@ -4,24 +4,20 @@ import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 import { fileURLToPath } from 'node:url';
 import { topics, systemInstruction, getFallback, getModelAnswer } from './lib/knowledge.js';
+import { createOriginChecker, createRateLimiter } from './lib/security.js';
 
 dotenv.config({ path: fileURLToPath(new URL('./.env', import.meta.url)), quiet: true });
 
 const app = express();
 app.disable('x-powered-by');
+app.set('trust proxy', 1);
 
 const key = process.env.GEMINI_API_KEY?.trim();
 const model = process.env.GEMINI_MODEL?.trim() || 'gemini-3.5-flash-lite';
 const ai = key ? new GoogleGenAI({ apiKey: key }) : null;
-const defaultOrigins = [
-  'http://127.0.0.1:4178',
-  'http://localhost:4178',
-  'https://mutirao-pontobot-frontend.vercel.app',
-  'https://mutirao-citizen-tech.vercel.app',
-];
-const origins = new Set(process.env.CORS_ORIGINS?.split(',').map((origin) => origin.trim()).filter(Boolean) ?? defaultOrigins);
-const allowOrigin = (origin) => origins.has(origin) || origin === `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-const chatCors = cors({ origin: (origin, done) => done(null, Boolean(origin && allowOrigin(origin))), methods: ['POST', 'OPTIONS'], allowedHeaders: ['Content-Type'], maxAge: 600 });
+const allowOrigin = createOriginChecker();
+const chatCors = cors({ origin: (origin, done) => done(null, allowOrigin(origin)), methods: ['POST', 'OPTIONS'], allowedHeaders: ['Content-Type'], maxAge: 600 });
+const checkRateLimit = createRateLimiter();
 const parseBody = express.json({ limit: '16kb' });
 const maxHistory = 6;
 
@@ -47,9 +43,9 @@ app.get(['/', '/api/health'], (_req, res) => {
 app.use('/api/chat', (req, res, next) => {
   res.set('Cache-Control', 'no-store').vary('Origin');
   const origin = req.get('Origin');
-  if (origin && !allowOrigin(origin)) return res.status(403).json({ error: 'Origem não autorizada.' });
+  if (!allowOrigin(origin)) return res.status(403).json({ error: 'Origem não autorizada.' });
   next();
-}, chatCors);
+}, chatCors, checkRateLimit);
 
 app.post('/api/chat', parseBody, async (req, res) => {
   if (!req.is('application/json')) return res.status(415).json({ error: 'Envie a pergunta em JSON.' });

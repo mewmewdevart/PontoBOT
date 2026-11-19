@@ -3,7 +3,7 @@ import { getFallback } from './knowledge.js';
 const stylesheet = new URL('./pontobot.css', import.meta.url).href;
 const avatar = new URL('./avatar.svg', import.meta.url).href;
 const defaultApi = new URL('./api/chat', import.meta.url).href;
-const defaultApp = 'mutirao-ctrlpeople-citizen-tech-26.vercel.app/';
+const defaultApp = 'https://mutirao-ctrlpeople-citizen-tech-26.vercel.app/';
 const suggestions = [
   'Como assumo um turno?',
   'Como registro um medicamento ou estoque?',
@@ -147,12 +147,16 @@ class PontoBot extends HTMLElement {
 
     if (action) {
       const app = new URL(this.dataset.app || defaultApp, document.baseURI);
-      const destination = new URL(action.path.replace(/^\/+/, ''), app);
-      if (['https:', 'http:'].includes(destination.protocol) && destination.origin === app.origin) {
-        const link = document.createElement('a');
-        link.href = destination.href;
-        link.textContent = action.label;
-        bubble.append(link);
+      const { path, label } = action;
+      const caminhoInterno = typeof path === 'string' && /^\/[a-z-]+\.html(?:#[a-z-]+)?$/.test(path);
+      if (caminhoInterno && typeof label === 'string') {
+        const destination = new URL(path.slice(1), app);
+        if (['https:', 'http:'].includes(destination.protocol) && destination.origin === app.origin) {
+          const link = document.createElement('a');
+          link.href = destination.href;
+          link.textContent = label;
+          bubble.append(link);
+        }
       }
     }
 

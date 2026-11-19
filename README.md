@@ -3,7 +3,7 @@
 Assistente virtual desenvolvido para ser integrado ao projeto **[Mutirão (`CitizenTechFIAPChallenge`)](https://github.com/mewmewdevart/CitizenTechFIAPChallenge)**, orientando familiares e cuidadores a encontrar telas e funcionalidades da plataforma (Agenda, Documentos, Diário de turno e Ajuda). Combina um **Web Component** isolado em Shadow DOM no frontend com uma API **Express + Google Gemini** no backend e fallback local automático.
 
 - **Projeto principal (Mutirão / CitizenTechFIAPChallenge):** https://github.com/mewmewdevart/CitizenTechFIAPChallenge
-- **Aplicação Mutirão no ar:** mutirao-ctrlpeople-citizen-tech-26.vercel.app/
+- **Aplicação Mutirão no ar:** https://mutirao-ctrlpeople-citizen-tech-26.vercel.app/
 - **Frontend / Demo do PontoBOT:** https://mutirao-pontobot-frontend.vercel.app/
 - **Backend (Health check):** https://mutirao-pontobot-backend.vercel.app/api/health
 
@@ -32,7 +32,7 @@ PontoBOT/
 │   ├── favicon_io/
 │   ├── avatar.svg
 │   ├── demo.css           # Estilos da página de demonstração
-│   ├── home.html         # Página de demonstração (<ponto-bot inline>)
+│   ├── index.html         # Página de demonstração (<ponto-bot inline>)
 │   ├── pontobot.css       # Estilos do Web Component (Shadow DOM)
 │   ├── pontobot.js        # Implementação do elemento <ponto-bot>
 │   └── vercel.json        # Header CORS de /pontobot.js e rewrite de /api/chat
@@ -49,21 +49,21 @@ PontoBOT/
 
 ```html
 <script type="module" src="https://mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
-<ponto-bot data-app="mutirao-ctrlpeople-citizen-tech-26.vercel.app/"></ponto-bot>
+<ponto-bot data-app="https://mutirao-ctrlpeople-citizen-tech-26.vercel.app/"></ponto-bot>
 ```
 
 ### Modo embutido (inline)
 
 ```html
 <script type="module" src="https://mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
-<ponto-bot inline data-app="mutirao-ctrlpeople-citizen-tech-26.vercel.app/"></ponto-bot>
+<ponto-bot inline data-app="https://mutirao-ctrlpeople-citizen-tech-26.vercel.app/"></ponto-bot>
 ```
 
 ### Atributos suportados
 
 | Atributo | Obrigatório | Descrição |
 | :--- | :--- | :--- |
-| `data-app` | Não | URL base do Mutirão usada para montar os links de atalho (padrão: `mutirao-ctrlpeople-citizen-tech-26.vercel.app/`). |
+| `data-app` | Não | URL base do Mutirão usada para montar os links de atalho (padrão: `https://mutirao-ctrlpeople-citizen-tech-26.vercel.app/`). |
 | `data-api` | Não | URL completa do endpoint `POST /api/chat` (padrão: `/api/chat` na origem do módulo `pontobot.js`). |
 | `inline` | Não | Quando presente, exibe o painel aberto no fluxo da página em vez do botão flutuante. |
 
@@ -137,8 +137,10 @@ Envia uma pergunta (até `240` caracteres) e um histórico opcional com até `6`
 **Teste rápido pelo PowerShell:**
 ```powershell
 $body = @{ question = 'Como assumo um turno?' } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri 'https://mutirao-pontobot-backend.vercel.app/api/chat' -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
+Invoke-RestMethod -Method Post -Uri 'https://mutirao-pontobot-backend.vercel.app/api/chat' -Headers @{ Origin = 'https://mutirao-pontobot-frontend.vercel.app' } -ContentType 'application/json; charset=utf-8' -Body ([Text.Encoding]::UTF8.GetBytes($body))
 ```
+
+A rota `/api/chat` exige cabeçalho `Origin` autorizado (`CORS_ORIGINS` ou origens padrão) e aplica limitação de frequência por cliente (`20` requisições por minuto por padrão, configurável via `RATE_LIMIT_MAX` e `RATE_LIMIT_WINDOW_MS`), retornando `429` quando excedido para acionar o fallback local no componente. Para o ambiente publicado, confira também os limites de requisições e de gasto do provedor e da plataforma.
 
 ---
 
