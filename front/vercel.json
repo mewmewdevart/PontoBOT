@@ -5,7 +5,7 @@
   "outputDirectory": ".",
   "headers": [
     {
-      "source": "/pontobot.js",
+      "source": "/(pontobot|knowledge)\\.js",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",

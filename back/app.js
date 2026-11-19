@@ -78,7 +78,7 @@ app.post('/api/chat', parseBody, async (req, res) => {
         abortSignal: AbortSignal.timeout(8000),
       },
     });
-    return res.json(getModelAnswer(response.text));
+    return res.json(getModelAnswer(response.text, question));
   } catch (error) {
     console.warn('PontoBOT: Gemini indisponível ou retornou uma resposta inválida.', error?.message ?? error);
     return res.json(getFallback(question));

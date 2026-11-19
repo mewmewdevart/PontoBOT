@@ -1,3 +1,5 @@
+import { getFallback } from './knowledge.js';
+
 const stylesheet = new URL('./pontobot.css', import.meta.url).href;
 const avatar = new URL('./avatar.svg', import.meta.url).href;
 const defaultApi = new URL('./api/chat', import.meta.url).href;
@@ -8,70 +10,6 @@ const suggestions = [
   'Onde estão os documentos?',
   'Como registro a passagem de cuidado?',
 ];
-
-const localTopics = [
-  {
-    match: /\b(medicamentos?|remedios?|doses?|comprimidos?|insumos?|materiais?|fraldas?|estoques?|repor|reposic\w*|administrad\w*|atrasad\w*)\b/,
-    reply: 'Em Medicamentos (Remédios e materiais), a aba Rotina e horários mostra as doses do dia. Na aba Itens e estoque, você gerencia medicamentos, materiais sem horário (como fraldas) e reposição de estoque.',
-    action: { path: '/medicamentos.html', label: 'Abrir Medicamentos' },
-  },
-  {
-    match: /\b(passagem|diario|relatos?|registr\w*|anotar\s*como\s*foi|ficha|alergias?|historico|imprimir|impressao|emergencia|acompanhamento)\b/,
-    reply: 'Na Ficha, você confere alergias, Consultas e exames, a necessidade de acompanhamento em Editar ficha e o Diário de turno. Pelo botão Anotar como foi, você vincula a anotação a um turno ou salva como registro geral.',
-    action: { path: '/ficha.html#diario', label: 'Abrir Diário de turno' },
-  },
-  {
-    match: /\b(documentos?|arquivos?|anexos?|laudos?|exames?|receitas?|atestados?|pasta|original)\b/,
-    reply: 'Em Documentos, você filtra por categoria, pesquisa arquivos, vê onde está o original e acessa o atendimento vinculado na Agenda.',
-    action: { path: '/documentos.html', label: 'Abrir Documentos' },
-  },
-  {
-    match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|recorren\w*|semanal|pontual|compromissos?|consultas?|exportar|baixar|ics)\b/,
-    reply: 'Na Agenda, você consulta a escala semanal, adiciona turnos pontuais, semanais ou diários, pede cobertura para alguém, edita ou cancela horários e gerencia compromissos, podendo baixar o calendário (.ics).',
-    action: { path: '/agenda.html', label: 'Abrir Agenda' },
-  },
-  {
-    match: /\b(direitos?|servicos?|beneficios?|sus|farmacia\s*popular|bpc|loas|inss|cras|caps|cep|estatuto|simulador)\b/,
-    reply: 'Em Direitos e serviços, você encontra guias de benefícios públicos, simulador de direitos e busca de serviços por CEP.',
-    action: { path: '/direitos.html', label: 'Abrir Direitos e serviços' },
-  },
-  {
-    match: /\b(configurac\w*|temas?|acolhedor|contraste|acessibilidade|fonte|som|silenciar|preferencias?)\b/,
-    reply: 'Em Configurações, você muda o tema, ajusta a fonte e ativa ou desativa alertas e som das notificações.',
-    action: { path: '/configuracoes.html', label: 'Abrir Configurações' },
-  },
-  {
-    match: /\b(pessoas?|rede|participantes?|cuidadores?|familia\w*|convites?|convidar)\b/,
-    reply: 'Em Pessoas da rede, você acompanha os participantes ativos e gerencia convites para novos familiares e cuidadores.',
-    action: { path: '/pessoas.html', label: 'Abrir Pessoas da rede' },
-  },
-  {
-    match: /\b(perfil|recados?|figurinhas?|folgas?|avatar|mascote|meus\s*dados)\b/,
-    reply: 'Em Meu perfil, você edita seus dados, escolhe avatar ou mascote, publica recados e registra pedidos de folga.',
-    action: { path: '/meu-perfil.html', label: 'Abrir Meu perfil' },
-  },
-  {
-    match: /\b(privacidade|lgpd|dados|sessao|seguranca|armazenamento)\b/,
-    reply: 'Na tela Privacidade, você consulta como os dados fictícios são tratados na sessão atual do navegador.',
-    action: { path: '/privacidade.html', label: 'Abrir Privacidade' },
-  },
-  {
-    match: /\b(inicio|home|porta\s*remedios?|potes?|registrar\s*cuidado|anotar\s*(o\s*)?turno|pesquis\w*|busca\w*|notificac\w*|quem\s*recebe\s*cuidado)\b/,
-    reply: 'No Início, você acompanha o porta-remédios interativo, a escala da semana, anota o turno pelo botão Anotar o turno (para a Ficha ou Agenda) e usa a busca no topo.',
-    action: { path: '/home.html', label: 'Abrir Início' },
-  },
-];
-
-const defaultLocalTopic = {
-  reply: 'Posso ajudar a navegar pelo Início, Agenda, Medicamentos e insumos, Documentos, Ficha e Diário de turno, Pessoas, Direitos e Configurações. Para outras dúvidas, consulte a tela de Ajuda.',
-  action: { path: '/ajuda.html', label: 'Abrir Ajuda' },
-};
-
-function getLocalFallback(question) {
-  const normalized = question.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
-  const topic = localTopics.find((entry) => entry.match.test(normalized)) ?? defaultLocalTopic;
-  return { reply: topic.reply, action: topic.action };
-}
 
 const template = document.createElement('template');
 template.innerHTML = `
@@ -192,7 +130,7 @@ class PontoBot extends HTMLElement {
 
     if (action) {
       const app = new URL(this.dataset.app || defaultApp, document.baseURI);
-      const destination = new URL(action.path, app);
+      const destination = new URL(action.path.replace(/^\/+/, ''), app);
       if (['https:', 'http:'].includes(destination.protocol) && destination.origin === app.origin) {
         const link = document.createElement('a');
         link.href = destination.href;
@@ -231,7 +169,7 @@ class PontoBot extends HTMLElement {
       this.status.textContent = '';
       if (this.input.value.trim() === question) this.input.value = '';
     } catch {
-      const fallback = getLocalFallback(question);
+      const fallback = getFallback(question);
       this.appendMessage(fallback.reply, 'bot', fallback.action);
       this.history.push({ role: 'user', text: question }, { role: 'model', text: fallback.reply });
       this.history = this.history.slice(-6);

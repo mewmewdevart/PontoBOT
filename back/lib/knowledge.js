@@ -14,7 +14,7 @@ export const topics = {
   agenda: {
     title: 'Agenda, escala semanal, turnos recorrentes e compromissos',
     reply: 'Na Agenda, você consulta o calendário mensal e a escala semanal, adiciona turnos pontuais, semanais ou diários, pede cobertura para alguém, edita ou cancela horários e cadastra, edita ou exclui compromissos, podendo também compartilhar ou baixar o calendário (.ics).',
-    action: { path: '/agenda.html', label: 'Abrir Agenda' },
+    action: { path: '/agenda.html#escala', label: 'Abrir escala na Agenda' },
     match: /\b(agenda|escala|cobertura|cobrir|assum\w*|plantao|turnos?|recorren\w*|semanal|pontual|compromissos?|consultas?|exportar|baixar|ics)\b/,
   },
   documentos: {
@@ -112,17 +112,49 @@ const fallbackOrder = [
   topics.inicio,
 ];
 
+const outOfScopePatterns = [
+  /\b(qual|que)\s+(a\s+)?dose\b/,
+  /\bquant[oa]s?\s+(doses?|comprimidos?|capsulas?|gotas?|ml|mg|remedios?|medicamentos?)\b/,
+  /\b(devo|posso|preciso|tenho\s+que|pode|faz\s+mal|e\s+seguro)\s+(dar|tomar|aplicar|administrar|aumentar|diminuir|dobrar|reduzir|suspender|parar|trocar|misturar|repetir)\b/,
+  /\b(qual|que)\s+(o\s+)?(remedio|medicamento)\s+(devo\s+|posso\s+)?(dar|tomar|usar|comprar|melhor|indicado|serve)\b/,
+  /\bo\s+que\s+(dar|tomar|fazer)\b/,
+  /\b(diagnostico|sintomas?|efeitos?\s+colaterais?|contraindicac\w*|interacao\s+medicamentosa|superdosagem|overdose|prognostico)\b/,
+  /\b(interpretar|analisar|avaliar|explicar|o\s+que\s+significa|resultado\s+d[eo])\s+(o\s+|um\s+|esse\s+|meu\s+|os\s+)?(exames?|laudos?|receitas?|hemograma)\b/,
+  /\b(exame|laudo|resultado)\s+(esta|deu|parece)\s+(normal|alterado|alto|baixo|bom|ruim|grave)\b/,
+  /\b(e\s+grave|precisa\s+ir\s+ao\s+(medico|hospital|pronto\s*socorro|upa)|chamar\s+(o\s+)?samu)\b/,
+];
+
+export const outOfScopeAnswer = {
+  reply: 'Não posso recomendar doses, medicamentos ou dar orientação clínica. Para decisões de saúde, consulte um profissional; se precisar, posso mostrar onde registrar informações no Mutirão.',
+  action: topics.ajuda.action,
+};
+
+export function normalizeQuestion(question) {
+  return String(question ?? '').toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
+}
+
+export function isOutOfScope(question) {
+  const normalized = normalizeQuestion(question);
+  return outOfScopePatterns.some((pattern) => pattern.test(normalized));
+}
+
 export function getFallback(question) {
-  const normalized = question.toLowerCase().normalize('NFD').replace(/\p{M}/gu, '');
+  if (isOutOfScope(question)) {
+    return { ...outOfScopeAnswer, source: 'faq' };
+  }
+  const normalized = normalizeQuestion(question);
   const topic = fallbackOrder.find((entry) => entry.match.test(normalized));
   const { reply, action } = topic ?? topics.ajuda;
   return { reply, action, source: 'faq' };
 }
 
-export function getModelAnswer(text) {
+export function getModelAnswer(text, question = '') {
   const result = JSON.parse(text);
   if (!Object.hasOwn(topics, result?.topic) || typeof result.reply !== 'string') throw new Error('invalid_response');
   const reply = result.reply.trim();
   if (!reply || reply.length > 700) throw new Error('invalid_response');
+  if (isOutOfScope(question) && result.topic !== 'ajuda') {
+    return { ...outOfScopeAnswer, source: 'gemini' };
+  }
   return { reply, action: topics[result.topic].action, source: 'gemini' };
 }
