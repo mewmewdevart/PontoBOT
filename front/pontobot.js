@@ -3,7 +3,7 @@ import { getFallback } from './knowledge.js';
 const stylesheet = new URL('./pontobot.css', import.meta.url).href;
 const avatar = new URL('./avatar.svg', import.meta.url).href;
 const defaultApi = new URL('./api/chat', import.meta.url).href;
-const defaultApp = 'https://mutirao-citizen-tech.vercel.app/';
+const defaultApp = 'https://mutirao-citizen-tech-2026.vercel.app/';
 const suggestions = [
   'Como assumo um turno?',
   'Como registro um medicamento ou estoque?',
@@ -28,7 +28,15 @@ template.innerHTML = `
       <div class="transcript" role="log" aria-label="Conversa" tabindex="0">
         <p class="bubble">Oi! Posso te ajudar a encontrar algo no Mutirão. Escolha uma pergunta ou escreva sua dúvida, sem incluir dados pessoais ou de saúde.</p>
       </div>
-      <div class="options" aria-label="Perguntas sugeridas" role="group"></div>
+      <div class="options-area">
+        <button class="options-toggle" type="button" aria-expanded="false" aria-controls="bot-options" hidden>
+          <span>Perguntas sugeridas</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m6 9 6 6 6-6"/>
+          </svg>
+        </button>
+        <div id="bot-options" class="options" aria-label="Perguntas sugeridas" role="group"></div>
+      </div>
       <form>
         <label for="bot-question">Sua pergunta</label>
         <div class="compose">
@@ -52,18 +60,21 @@ class PontoBot extends HTMLElement {
     this.launcher = root.querySelector('.launcher');
     this.closeButton = root.querySelector('.close');
     this.transcript = root.querySelector('.transcript');
+    this.options = root.querySelector('.options');
+    this.optionsToggle = root.querySelector('.options-toggle');
     this.input = root.querySelector('input');
     this.status = root.querySelector('.status');
     this.history = [];
 
-    const options = root.querySelector('.options');
     for (const question of suggestions) {
       const button = document.createElement('button');
       button.type = 'button';
       button.textContent = question;
       button.addEventListener('click', () => this.ask(question));
-      options.append(button);
+      this.options.append(button);
     }
+
+    this.optionsToggle.addEventListener('click', () => this.setOptionsVisible(this.options.hidden));
 
     root.querySelector('form').addEventListener('submit', (event) => {
       event.preventDefault();
@@ -121,6 +132,12 @@ class PontoBot extends HTMLElement {
     else this.open();
   }
 
+  setOptionsVisible(visible) {
+    this.options.hidden = !visible;
+    this.optionsToggle.setAttribute('aria-expanded', String(visible));
+    this.panel.classList.toggle('options-collapsed', !visible);
+  }
+
   appendMessage(message, className, action) {
     const bubble = document.createElement('div');
     bubble.classList.add('bubble', className);
@@ -150,8 +167,12 @@ class PontoBot extends HTMLElement {
     this.pending = true;
     this.status.textContent = 'Buscando resposta…';
     const focusedButton = [...this.buttons].find((button) => button === this.shadowRoot.activeElement);
+    const cameFromOptions = Boolean(focusedButton && this.options.contains(focusedButton));
+    this.panel.classList.add('has-conversation');
+    this.optionsToggle.hidden = false;
+    this.setOptionsVisible(false);
     for (const button of this.buttons) button.disabled = true;
-    const message = this.appendMessage(question, 'user');
+    this.appendMessage(question, 'user');
 
     try {
       const response = await fetch(this.dataset.api || defaultApi, {
@@ -178,7 +199,11 @@ class PontoBot extends HTMLElement {
     } finally {
       this.pending = false;
       for (const button of this.buttons) button.disabled = false;
-      if (focusedButton && document.activeElement === document.body) focusedButton.focus();
+      if (cameFromOptions && this.options.hidden) {
+        this.input.focus();
+      } else if (focusedButton && document.activeElement === document.body) {
+        focusedButton.focus();
+      }
     }
   }
 }

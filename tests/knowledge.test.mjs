@@ -66,4 +66,12 @@ test('outras perguntas fora do escopo e atalhos existentes são tratados correta
   const diario = frontKnowledge.getFallback('Onde registro o relato no diário?');
   assert.equal(diario.action.path, '/ficha.html#diario');
   assert.deepEqual(diario, backKnowledge.getFallback('Onde registro o relato no diário?'));
+
+  const apresentacao = frontKnowledge.getFallback('Onde vejo a landing page e o FAQ?');
+  assert.equal(apresentacao.action.path, '/index.html');
+  assert.deepEqual(apresentacao, backKnowledge.getFallback('Onde vejo a landing page e o FAQ?'));
+
+  const login = frontKnowledge.getFallback('Como faço login para acessar a demonstração?');
+  assert.equal(login.action.path, '/login.html');
+  assert.deepEqual(login, backKnowledge.getFallback('Como faço login para acessar a demonstração?'));
 });

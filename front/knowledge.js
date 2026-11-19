@@ -59,9 +59,21 @@ export const topics = {
     action: { path: '/privacidade.html', label: 'Abrir Privacidade' },
     match: /\b(privacidade|lgpd|dados|sessao|seguranca|armazenamento)\b/,
   },
+  apresentacao: {
+    title: 'Página inicial (landing page), apresentação e FAQ do projeto',
+    reply: 'Na página inicial do Mutirão, você conhece a proposta do projeto, vê prévia das telas no celular e no computador, lê as perguntas frequentes (FAQ) sobre o funcionamento e encontra o botão Acessar a demonstração.',
+    action: { path: '/index.html', label: 'Ver página inicial' },
+    match: /\b(landing|apresentacao|pagina\s*inicial|faq|sobre\s+o\s+projeto|o\s+que\s+e\s+(o\s+)?mutirao)\b/,
+  },
+  login: {
+    title: 'Tela de entrada (login) e acesso à demonstração',
+    reply: 'Na tela de entrada (login), clique em Entrar na demonstração com o acesso fictício preenchido. Depois, use o seletor Quem recebe cuidado no topo para alternar entre Flavinho e Mari.',
+    action: { path: '/login.html', label: 'Abrir login' },
+    match: /\b(login|entrar|demonstracao|acessar|flavinho|mari)\b/,
+  },
   ajuda: {
     title: 'Dúvidas gerais sobre o Mutirão ou perguntas fora do escopo',
-    reply: 'Posso ajudar a navegar pelo Início, Agenda, Medicamentos e insumos, Documentos, Ficha e Diário de turno, Pessoas da rede, Direitos e Configurações. Para outras dúvidas, consulte a tela de Ajuda.',
+    reply: 'Posso ajudar a navegar pela página inicial, login, Início, Agenda, Medicamentos e insumos, Documentos, Ficha e Diário de turno, Pessoas da rede, Direitos e Configurações. Para outras dúvidas, consulte a tela de Ajuda.',
     action: { path: '/ajuda.html', label: 'Abrir Ajuda' },
   },
 };
@@ -77,6 +89,8 @@ export const fallbackOrder = [
   topics.perfil,
   topics.privacidade,
   topics.inicio,
+  topics.apresentacao,
+  topics.login,
 ];
 
 const outOfScopePatterns = [

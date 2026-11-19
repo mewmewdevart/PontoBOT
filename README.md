@@ -3,7 +3,7 @@
 Assistente virtual desenvolvido para ser integrado ao projeto **[Mutirão (`CitizenTechFIAPChallenge`)](https://github.com/mewmewdevart/CitizenTechFIAPChallenge)**, orientando familiares e cuidadores a encontrar telas e funcionalidades da plataforma (Agenda, Documentos, Diário de turno e Ajuda). Combina um **Web Component** isolado em Shadow DOM no frontend com uma API **Express + Google Gemini** no backend e fallback local automático.
 
 - **Projeto principal (Mutirão / CitizenTechFIAPChallenge):** https://github.com/mewmewdevart/CitizenTechFIAPChallenge
-- **Aplicação Mutirão no ar:** https://mutirao-citizen-tech.vercel.app/
+- **Aplicação Mutirão no ar:** https://mutirao-citizen-tech-2026.vercel.app/
 - **Frontend / Demo do PontoBOT:** https://mutirao-pontobot-frontend.vercel.app/
 - **Backend (Health check):** https://mutirao-pontobot-backend.vercel.app/api/health
 
@@ -49,21 +49,21 @@ PontoBOT/
 
 ```html
 <script type="module" src="https://mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
-<ponto-bot data-app="https://mutirao-citizen-tech.vercel.app/"></ponto-bot>
+<ponto-bot data-app="https://mutirao-citizen-tech-2026.vercel.app/"></ponto-bot>
 ```
 
 ### Modo embutido (inline)
 
 ```html
 <script type="module" src="https://mutirao-pontobot-frontend.vercel.app/pontobot.js"></script>
-<ponto-bot inline data-app="https://mutirao-citizen-tech.vercel.app/"></ponto-bot>
+<ponto-bot inline data-app="https://mutirao-citizen-tech-2026.vercel.app/"></ponto-bot>
 ```
 
 ### Atributos suportados
 
 | Atributo | Obrigatório | Descrição |
 | :--- | :--- | :--- |
-| `data-app` | Não | URL base do Mutirão usada para montar os links de atalho (padrão: `https://mutirao-citizen-tech.vercel.app/`). |
+| `data-app` | Não | URL base do Mutirão usada para montar os links de atalho (padrão: `https://mutirao-citizen-tech-2026.vercel.app/`). |
 | `data-api` | Não | URL completa do endpoint `POST /api/chat` (padrão: `/api/chat` na origem do módulo `pontobot.js`). |
 | `inline` | Não | Quando presente, exibe o painel aberto no fluxo da página em vez do botão flutuante. |
 
