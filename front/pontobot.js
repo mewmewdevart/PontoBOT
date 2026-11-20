@@ -188,6 +188,9 @@ class PontoBot extends HTMLElement {
       if (!response.ok) throw new Error('API indisponível');
 
       const answer = await response.json();
+      if (typeof answer?.reply !== 'string' || !answer.reply.trim()) {
+        throw new Error('Resposta indisponível');
+      }
       this.appendMessage(answer.reply, 'bot', answer.action);
       this.history.push({ role: 'user', text: question }, { role: 'model', text: answer.reply });
       this.history = this.history.slice(-6);
